@@ -32,3 +32,40 @@ export function Models(name: string): (target: any, key: string) => void {
     }
   };
 }
+
+export class Mongo implements Database {
+  mongoConnection: MongoConnectionOptions;
+
+  constructor() {
+    this.mongoConnection = {
+      connectionString: "",
+      options: {},
+    };
+  }
+
+  connect(): Promise<any> {
+    const { connectionString, options } = this.mongoConnection;
+    return connect(
+      connectionString,
+      options
+    );
+  }
+
+  connection(logs: boolean) {
+    let isConnecting = false;
+    const checkConnection = setInterval(() => {
+      if (connection.readyState === 2 && !isConnecting) {
+        isConnecting = true;
+        if (logs) {
+          console.log("\n\x1b[33mTrying to connect database.\x1b[0m");
+        }
+      } else {
+        clearInterval(checkConnection);
+      }
+    }, 1000);
+  }
+
+  models(array: IPaginateModel[]) {
+    array.map(model => models.push(model));
+  }
+}
