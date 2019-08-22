@@ -5,6 +5,9 @@ import paginate from "mongoose-paginate";
 
 const models: IPaginateModel[] = [];
 
+export * from "mongoose";
+export { paginate };
+
 export function Models(name: string): (target: any, key: string) => void {
   return (target: any, key: string): void => {
     // property value
