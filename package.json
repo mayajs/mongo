@@ -1,0 +1,22 @@
+{
+  "name": "@mayajs/mongo",
+  "version": "0.1.0",
+  "description": "MayaJS Mongo decorators and modules",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mayajs/mongo.git"
+  },
+  "author": "Mark Anthony C. Ignacio",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mayajs/mongo/issues"
+  },
+  "homepage": "https://github.com/mayajs/mongo#readme",
+  "dependencies": {
+    "@mayajs/core": "^0.2.4"
+  }
+}
