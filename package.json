@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "description": "MayaJS Mongo decorators and modules",
   "main": "index.js",
+  "files": ["*.d.ts", "*.js"],
   "scripts": {
     "start": "npm run clean && wait-on -r index.js && tsc -w",
     "clean": "rimraf *.d.ts && rimraf *.js && rimraf *.tgz",
