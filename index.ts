@@ -36,10 +36,6 @@ export function Models(name: string): (target: any, key: string) => void {
   };
 }
 
-export function Mongo(options: ConnectionOptions): MongoDatabase {
-  return new MongoDatabase(options);
-}
-
 class MongoDatabase implements Database {
   constructor(private mongoConnection: ConnectionOptions) {}
 
@@ -51,7 +47,7 @@ class MongoDatabase implements Database {
     );
   }
 
-  connection(logs: boolean) {
+  connection(logs: boolean): void {
     let isConnecting = false;
     const checkConnection = setInterval(() => {
       if (connection.readyState === 2 && !isConnecting) {
@@ -65,11 +61,15 @@ class MongoDatabase implements Database {
     }, 1000);
   }
 
-  models(array: ModelList[]) {
+  models(array: ModelList[]): void {
     array.map(model => {
       import(model.path).then(e => {
         models.push({ [model.name]: e.default });
       });
     });
   }
+}
+
+export function Mongo(options: ConnectionOptions): MongoDatabase {
+  return new MongoDatabase(options);
 }
