@@ -4,7 +4,9 @@
   "description": "MayaJS Mongo decorators and modules",
   "main": "index.js",
   "scripts": {
-    "start": "tsc -w"
+    "start": "npm run clean && wait-on -r index.js && tsc -w",
+    "clean": "rimraf *.d.ts && rimraf *.js && rimraf *.tgz",
+    "prepack": "npm run clean && wait-on -r index.js && tsc"
   },
   "repository": {
     "type": "git",
@@ -16,16 +18,16 @@
     "url": "https://github.com/mayajs/mongo/issues"
   },
   "homepage": "https://github.com/mayajs/mongo#readme",
-  "dependencies": {
-    "mongoose": "^5.6.10",
-    "mongoose-paginate": "^5.0.3"
-  },
   "devDependencies": {
     "@types/mongoose": "^5.5.13",
     "@types/mongoose-paginate": "^5.0.6",
     "@types/node": "^12.7.2",
     "tslint": "^5.19.0",
     "tslint-config-prettier": "^1.18.0",
-    "typescript": "^3.5.3"
+    "typescript": "^3.5.3",
+    "wait-on": "^3.3.0"
+  },
+  "peerDependencies": {
+    "mongoose": "^5.6.10"
   }
 }
