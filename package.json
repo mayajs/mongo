@@ -4,7 +4,7 @@
   "description": "MayaJS Mongo decorators and modules",
   "main": "index.js",
   "scripts": {
-    "start": "tsnd --respawn index.ts"
+    "start": "tsc -w"
   },
   "repository": {
     "type": "git",
@@ -23,7 +23,6 @@
   },
   "devDependencies": {
     "@types/node": "^12.7.2",
-    "ts-node-dev": "^1.0.0-pre.41",
     "tslint": "^5.19.0",
     "tslint-config-prettier": "^1.18.0",
     "typescript": "^3.5.3"
