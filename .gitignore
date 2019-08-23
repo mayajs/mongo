@@ -5,6 +5,12 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
+# Javascript files
+*.js
+
+# Declaration files
+*.d.ts
+
 # Runtime data
 pids
 *.pid
