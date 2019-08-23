@@ -1,9 +1,9 @@
+import { ModelPaginate, ConnectionOptions } from "./interfaces";
+import { Database, ModelList } from "@mayajs/core";
 import { connect, connection } from "mongoose";
-import { Database, MongoConnectionOptions } from "@mayajs/core";
-import { IPaginateModel } from "./interfaces";
 import paginate from "mongoose-paginate";
 
-const models: IPaginateModel[] = [];
+const models: ModelPaginate[] = [];
 
 export * from "mongoose";
 export { paginate };
@@ -36,12 +36,12 @@ export function Models(name: string): (target: any, key: string) => void {
   };
 }
 
-export function Mongo(options: MongoConnectionOptions): MongoDatabase {
+export function Mongo(options: ConnectionOptions): MongoDatabase {
   return new MongoDatabase(options);
 }
 
 class MongoDatabase implements Database {
-  constructor(private mongoConnection: MongoConnectionOptions) {}
+  constructor(private mongoConnection: ConnectionOptions) {}
 
   connect(): Promise<any> {
     const { connectionString, options } = this.mongoConnection;
@@ -65,7 +65,11 @@ class MongoDatabase implements Database {
     }, 1000);
   }
 
-  models(array: IPaginateModel[]) {
-    array.map(model => models.push(model));
+  models(array: ModelList[]) {
+    array.map(model => {
+      import(model.path).then(e => {
+        models.push({ [model.name]: e.default });
+      });
+    });
   }
 }
