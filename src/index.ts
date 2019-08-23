@@ -1,11 +1,7 @@
 import { ModelPaginate, ConnectionOptions, Database, ModelList } from "./interfaces";
 import { connect, connection } from "mongoose";
-import paginate from "mongoose-paginate";
 
 const models: ModelPaginate[] = [];
-
-export * from "mongoose";
-export { paginate };
 
 export function Models(name: string): (target: any, key: string) => void {
   return (target: any, key: string): void => {
