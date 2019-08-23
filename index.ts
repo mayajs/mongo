@@ -1,5 +1,4 @@
-import { ModelPaginate, ConnectionOptions } from "./interfaces";
-import { Database, ModelList } from "@mayajs/core";
+import { ModelPaginate, ConnectionOptions, Database, ModelList } from "./interfaces";
 import { connect, connection } from "mongoose";
 import paginate from "mongoose-paginate";
 
