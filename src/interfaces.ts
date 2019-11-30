@@ -12,6 +12,7 @@ export interface ConnectionOptions {
 export interface Database {
   connect: () => Promise<any>;
   connection: (logs: boolean) => void;
+  models: (array: ModelList[]) => void;
 }
 
 export interface ModelList {
