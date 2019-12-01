@@ -1,6 +1,6 @@
 {
   "name": "@mayajs/mongo",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "MayaJS Mongo decorators and modules",
   "main": "index.js",
   "files": [
