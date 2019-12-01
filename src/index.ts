@@ -1,5 +1,5 @@
+import { connect, connection, Schema, model, SchemaDefinition, SchemaOptions, PaginateModel, Document } from "mongoose";
 import { ModelPaginate, ConnectionOptions, Database, ModelList } from "./interfaces";
-import { connect, connection } from "mongoose";
 
 const models: ModelPaginate[] = [];
 
@@ -31,15 +31,22 @@ export function Models(name: string): (target: any, key: string) => void {
   };
 }
 
+export function MongoSchema(object: SchemaDefinition, options?: SchemaOptions): Schema {
+  return new Schema(object, options);
+}
+
+export function MongoModel(name: string, schema: Schema): PaginateModel<Document> {
+  const modelObject = model(name, schema);
+  models.push({ [name]: modelObject });
+  return modelObject;
+}
+
 class MongoDatabase implements Database {
   constructor(private mongoConnection: ConnectionOptions) {}
 
   connect(): Promise<any> {
     const { connectionString, options } = this.mongoConnection;
-    return connect(
-      connectionString,
-      options
-    );
+    return connect(connectionString, options);
   }
 
   connection(logs: boolean): void {
@@ -48,7 +55,7 @@ class MongoDatabase implements Database {
       if (connection.readyState === 2 && !isConnecting) {
         isConnecting = true;
         if (logs) {
-          console.log("\n\x1b[33mTrying to connect database.\x1b[0m");
+          console.log(`\x1b[33m[mayajs] connecting to database\x1b[0m`);
         }
       } else {
         clearInterval(checkConnection);
@@ -56,8 +63,8 @@ class MongoDatabase implements Database {
     }, 1000);
   }
 
-  models(array: ModelList[]): void {
-    array.map(model => {
+  models(modelList: ModelList[]): void {
+     modelList.map(model => {
       import(model.path).then(e => {
         models.push({ [model.name]: e.default });
       });
