@@ -3,7 +3,10 @@
   "version": "0.1.0",
   "description": "MayaJS Mongo decorators and modules",
   "main": "index.js",
-  "files": ["*.d.ts", "*.js"],
+  "files": [
+    "*.d.ts",
+    "*.js"
+  ],
   "scripts": {
     "start": "npm run clean && wait-on -r index.js && tsc -w",
     "clean": "rimraf *.d.ts && rimraf *.js && rimraf *.tgz",
@@ -28,7 +31,7 @@
     "typescript": "^3.5.3",
     "wait-on": "^3.3.0"
   },
-  "peerDependencies": {
-    "mongoose": "^5.6.10"
+  "dependencies": {
+    "mongoose": "^5.7.13"
   }
 }
