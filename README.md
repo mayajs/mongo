@@ -2,19 +2,26 @@
 
 <h1 align="center">Mongo Decorators and Modules</h1>
 
+## Description
+
+This is a MayaJS library that deals with Mongodb drivers. It uses `mongoose` to connect to any mongodb database. It also use mongoose Schema and Model for its model creation.
+
 ## Decorators
 
 ### Models
-> Creates a model intance based on the name passed on the parameter. 
+
+> Creates a model intance based on the name passed on the parameter.
 
 MayaJS collect and store all the models defined on the `@Controller` decorators to a single object. Everytime the `@Models` decorator is attached to a variable it replace its value with a model instance. This model instance is based on [mongoose model](https://mongoosejs.com/docs/api/model.html). All of mongoose functionality is available for this model instance.
 
 #### Pseudo Code
+
 ```javascript
    @Models(model_name:string) varaiable_name;
 ```
 
 #### Sample Code
+
 ```javascript
    @Models("sample") model;
 ```
@@ -28,15 +35,18 @@ MayaJS collect and store all the models defined on the `@Controller` decorators 
 Mongo accepts an object settings that will set the connection for MongoDB. MayaJS will automatically connect to the specified settings whenever the server starts. It will also set the models using the models function. It typically used inside the `@App` decorator on the options paramater.
 
 #### Options
+
 ```javascript
 {
   connectionString: string; // Connection string
   options?: ConnectionOptions; // Mongoose connect options OPTIONAL
 }
 ```
->**NOTE:** See full documentation of [ConnectionOptions here.](https://mongoosejs.com/docs/connections.html#options)
+
+> **NOTE:** See full documentation of [ConnectionOptions here.](https://mongoosejs.com/docs/connections.html#options)
 
 #### Sample Code
+
 ```javascript
 @App({
   database: Mongo({
