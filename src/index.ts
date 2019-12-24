@@ -1,10 +1,10 @@
-import { connect, connection, Schema, model, SchemaDefinition, SchemaOptions, PaginateModel, Document } from "mongoose";
-import { ModelPaginate, ConnectionOptions, Database, ModelList } from "./interfaces";
+import { connect, connection, Schema as Schemas, model, SchemaDefinition, SchemaOptions, PaginateModel, Document as MongooseDocument } from "mongoose";
+import { ModelPaginate, MongodbOptions, Database, ModelList, MongoModelOptions } from "./interfaces";
 
 const models: ModelPaginate[] = [];
 
-export function Models(name: string): (target: any, key: string) => void {
-  return (target: any, key: string): void => {
+export function Models(name: string): any {
+  return (target: any, key: string): any => {
     // property value
     let value = target[key];
 
@@ -31,18 +31,24 @@ export function Models(name: string): (target: any, key: string) => void {
   };
 }
 
-export function MongoSchema(object: SchemaDefinition, options?: SchemaOptions): Schema {
-  return new Schema(object, options);
+export function MongoSchema(object: SchemaDefinition, options?: SchemaOptions): Schemas {
+  return new Schemas(object, options);
 }
 
-export function MongoModel(name: string, schema: Schema): PaginateModel<Document> {
-  const modelObject = model(name, schema);
-  models.push({ [name]: modelObject });
-  return modelObject;
+export function MongoModel<T extends MongooseDocument>(name: string, schema: Schemas, options: MongoModelOptions = {}): PaginateModel<T> {
+  const modelInstance = model<T>(name, schema);
+  if (options && options.discriminators && options.discriminators.length > 0) {
+    options.discriminators.map(discriminator => {
+      const discriminatorModel = modelInstance.discriminator(discriminator.key, discriminator.schema) as PaginateModel<T>;
+      models.push({ [discriminator.key.toLowerCase()]: discriminatorModel });
+    });
+  }
+  models.push({ [name]: modelInstance });
+  return modelInstance;
 }
 
 class MongoDatabase implements Database {
-  constructor(private mongoConnection: ConnectionOptions) {}
+  constructor(private mongoConnection: MongodbOptions) {}
 
   connect(): Promise<any> {
     const { connectionString, options } = this.mongoConnection;
@@ -64,7 +70,7 @@ class MongoDatabase implements Database {
   }
 
   models(modelList: ModelList[]): void {
-     modelList.map(model => {
+    modelList.map(model => {
       import(model.path).then(e => {
         models.push({ [model.name]: e.default });
       });
@@ -72,6 +78,12 @@ class MongoDatabase implements Database {
   }
 }
 
-export function Mongo(options: ConnectionOptions): MongoDatabase {
+export function Mongo(options: MongodbOptions): MongoDatabase {
   return new MongoDatabase(options);
 }
+
+// tslint:disable: no-empty-interface
+export interface Document extends MongooseDocument {}
+
+// tslint:disable-next-line: variable-name
+export const Schema = Schemas;
