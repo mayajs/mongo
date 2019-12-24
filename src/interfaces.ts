@@ -1,10 +1,10 @@
-import { PaginateModel, ConnectionOptions } from "mongoose";
+import { PaginateModel, ConnectionOptions, Schema, Document } from "mongoose";
 
 export interface ModelPaginate {
   [k: string]: PaginateModel<any>;
 }
 
-export interface ConnectionOptions {
+export interface MongodbOptions {
   connectionString: string; // Connection string
   options?: ConnectionOptions; // Mongoose connect options OPTIONAL
 }
@@ -18,4 +18,8 @@ export interface Database {
 export interface ModelList {
   name: string;
   path: string;
+}
+
+export interface MongoModelOptions {
+  discriminators?: Array<{ key: string; schema: Schema }>;
 }
