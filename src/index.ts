@@ -116,10 +116,16 @@ class MongoDatabase implements Database {
     if (options && options.discriminators && options.discriminators.length > 0) {
       options.discriminators.map((discriminator: any) => {
         const discriminatorModel = modelInstance.discriminator(discriminator.key, discriminator.schema) as PaginateModel<T>;
-        models.push({ [discriminator.key.toLowerCase()]: discriminatorModel });
+        const modelName = this.sanitizeModelName(discriminator.key);
+        models.push({ [modelName]: discriminatorModel });
       });
     }
-    models.push({ [name]: modelInstance });
+    const modelName = this.sanitizeModelName(name);
+    models.push({ [modelName]: modelInstance });
+  }
+
+  private sanitizeModelName(name: string): string {
+    return name.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase();
   }
 }
 
