@@ -100,8 +100,10 @@ class MongoDatabase implements Database {
 
     if (options && options.discriminators && options.discriminators.length > 0) {
       options.discriminators.map((discriminator: any) => {
-        const discriminatorModel = modelInstance.discriminator(discriminator.key, discriminator.schema) as PaginateModel<T>;
-        this.addModelToList(discriminator.key, discriminatorModel);
+        if (!this.modelNameExist(discriminator.key)) {
+          const discriminatorModel = modelInstance.discriminator(discriminator.key, discriminator.schema) as PaginateModel<T>;
+          this.addModelToList(discriminator.key, discriminatorModel);
+        }
       });
     }
   }
