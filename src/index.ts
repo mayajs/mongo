@@ -45,24 +45,18 @@ class MongoDatabase implements Database {
   private schemas: SchemaObject[] = [];
 
   constructor(private mongoConnection: MongodbOptions) {
-    const dbName = `db${Object.keys(dbList).length + 1}`;
+    const { name, schemas = [] } = mongoConnection;
+    const dbName = name ?? `db${Object.keys(dbList).length + 1}`;
     dbList[dbName] = mogoose;
+    this.schemas = schemas;
     this.dbInstance = dbList[dbName];
   }
 
   connect(): Promise<any> {
     const {
       connectionString,
-      options = {
-        useCreateIndex: true,
-        useFindAndModify: false,
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-      },
-      schemas = [],
+      options = { useCreateIndex: true, useFindAndModify: false, useNewUrlParser: true, useUnifiedTopology: true },
     } = this.mongoConnection;
-
-    this.schemas = schemas;
     return this.dbInstance.connect(connectionString, options);
   }
 
