@@ -9,7 +9,7 @@ import {
   Document as MongooseDocument,
   Mongoose,
 } from "mongoose";
-import { ModelPaginate, MongodbOptions, Database, ModelList, MongoModelOptions } from "./interfaces";
+import { ModelPaginate, MongodbOptions, Database, ModelList, MongoModelOptions, SchemaObject } from "./interfaces";
 
 const models: ModelPaginate[] = [];
 
@@ -59,6 +59,8 @@ export function MongoModel<T extends MongooseDocument>(name: string, schema: Sch
 
 class MongoDatabase implements Database {
   private dbInstance: Mongoose;
+  private schemas: SchemaObject[] = [];
+
   constructor(private mongoConnection: MongodbOptions) {
     this.dbInstance = new Mongoose();
   }
@@ -72,7 +74,10 @@ class MongoDatabase implements Database {
         useNewUrlParser: true,
         useUnifiedTopology: true,
       },
+      schemas = [],
     } = this.mongoConnection;
+
+    this.schemas = schemas;
     this.dbInstance = await connect(connectionString, options);
     return this.dbInstance;
   }
@@ -92,10 +97,17 @@ class MongoDatabase implements Database {
   }
 
   models(modelList: ModelList[]): void {
+    this.mapSchema(this.schemas);
     modelList.map((model: any) => {
       import(model.path).then((e: any) => {
         models.push({ [model.name]: e.default });
       });
+    });
+  }
+
+  private mapSchema(schemas: SchemaObject[]): void {
+    schemas.map((schema: SchemaObject) => {
+      MongoModel(schema.name, schema.schema, schema.options);
     });
   }
 }
