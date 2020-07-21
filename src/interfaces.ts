@@ -12,8 +12,9 @@ export interface SchemaObject {
 
 export interface MongodbOptions {
   connectionString: string; // Connection string
+  name?: string; // Mongodb instance name
   options?: ConnectionOptions; // Mongoose connect options OPTIONAL
-  schemas?: SchemaObject[];
+  schemas?: SchemaObject[]; // List of SchemaObject
 }
 
 export interface Database {
