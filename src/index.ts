@@ -70,6 +70,7 @@ class MongoDatabase implements Database {
     const checkConnection = setInterval(() => {
       if (this.dbInstance.connection.readyState === 1) {
         clearInterval(checkConnection);
+        console.log(`\x1b[32m[mayajs] ${this.dbName} database is connected.\x1b[0m`);
         return;
       }
 
