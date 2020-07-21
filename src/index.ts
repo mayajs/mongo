@@ -1,5 +1,6 @@
 import mogoose, { Schema as Schemas, SchemaDefinition, SchemaOptions, PaginateModel, Document as MongooseDocument, Mongoose } from "mongoose";
 import { ModelPaginate, MongodbOptions, Database, ModelList, MongoModelOptions, SchemaObject } from "./interfaces";
+import mongoosePaginate from "mongoose-paginate";
 
 const models: ModelPaginate[] = [];
 const dbList: { [x: string]: Mongoose } = {};
@@ -133,3 +134,6 @@ export interface Document extends MongooseDocument {}
 
 // tslint:disable-next-line: variable-name
 export const Schema = Schemas;
+
+// tslint:disable-next-line: variable-name
+export const MongoPaginate = mongoosePaginate;
