@@ -1,4 +1,14 @@
-import { connect, connection, Schema as Schemas, model, SchemaDefinition, SchemaOptions, PaginateModel, Document as MongooseDocument } from "mongoose";
+import {
+  connect,
+  connection,
+  Schema as Schemas,
+  model,
+  SchemaDefinition,
+  SchemaOptions,
+  PaginateModel,
+  Document as MongooseDocument,
+  Mongoose,
+} from "mongoose";
 import { ModelPaginate, MongodbOptions, Database, ModelList, MongoModelOptions } from "./interfaces";
 
 const models: ModelPaginate[] = [];
@@ -48,9 +58,12 @@ export function MongoModel<T extends MongooseDocument>(name: string, schema: Sch
 }
 
 class MongoDatabase implements Database {
-  constructor(private mongoConnection: MongodbOptions) {}
+  private dbInstance: Mongoose;
+  constructor(private mongoConnection: MongodbOptions) {
+    this.dbInstance = new Mongoose();
+  }
 
-  connect(): Promise<any> {
+  async connect(): Promise<any> {
     const {
       connectionString,
       options = {
@@ -60,8 +73,8 @@ class MongoDatabase implements Database {
         useUnifiedTopology: true,
       },
     } = this.mongoConnection;
-
-    return connect(connectionString, options);
+    this.dbInstance = await connect(connectionString, options);
+    return this.dbInstance;
   }
 
   connection(logs: boolean): void {
