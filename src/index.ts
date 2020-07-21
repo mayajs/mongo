@@ -99,13 +99,17 @@ class MongoDatabase implements Database {
     this.addModelToList(name, modelInstance);
 
     if (options && options.discriminators && options.discriminators.length > 0) {
-      options.discriminators.map((discriminator: any) => {
-        if (!this.modelNameExist(discriminator.key)) {
-          const discriminatorModel = modelInstance.discriminator(discriminator.key, discriminator.schema) as PaginateModel<T>;
-          this.addModelToList(discriminator.key, discriminatorModel);
-        }
-      });
+      options.discriminators.map(this.addDiscriminatorModel(modelInstance));
     }
+  }
+
+  private addDiscriminatorModel<T extends MongooseDocument>(modelInstance: mogoose.PaginateModel<T>): (arg: any) => void {
+    return (discriminator: any) => {
+      if (!this.modelNameExist(discriminator.key)) {
+        const discriminatorModel = modelInstance.discriminator(discriminator.key, discriminator.schema) as PaginateModel<T>;
+        this.addModelToList(discriminator.key, discriminatorModel);
+      }
+    };
   }
 
   private sanitizeModelName(name: string): string {
