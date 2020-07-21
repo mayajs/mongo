@@ -48,13 +48,14 @@ export function MongoModel(name: string, schema: Schemas, options: MongoModelOpt
 class MongoDatabase implements Database {
   private dbInstance: Mongoose;
   private schemas: SchemaObject[] = [];
+  private dbName: string;
 
   constructor(private mongoConnection: MongodbOptions) {
     const { name, schemas = [] } = mongoConnection;
-    const dbName = name ?? `db${Object.keys(dbList).length + 1}`;
-    dbList[dbName] = mogoose;
+    this.dbName = name ?? `db${Object.keys(dbList).length + 1}`;
+    dbList[this.dbName] = mogoose;
     this.schemas = schemas;
-    this.dbInstance = dbList[dbName];
+    this.dbInstance = dbList[this.dbName];
   }
 
   connect(): Promise<any> {
@@ -75,7 +76,7 @@ class MongoDatabase implements Database {
       const isConnecting = this.dbInstance.connection.readyState === 2;
 
       if (isConnecting && logs) {
-        console.log(`\x1b[33m[mayajs] connecting to database\x1b[0m`);
+        console.log(`\x1b[33m[mayajs] Waiting for ${this.dbName} database to connect.\x1b[0m`);
       }
     }, 1000);
   }
