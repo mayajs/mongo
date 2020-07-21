@@ -10,12 +10,12 @@ export function Models(name: string): any {
 
     // property getter method
     const getter = () => {
-      return models.filter((e) => e[name])[0][name];
+      return models.filter((e: any) => e[name])[0][name];
     };
 
     // property setter method
     const setter = (newVal: string) => {
-      value = models.filter((e) => e[newVal])[0][newVal];
+      value = models.filter((e: any) => e[newVal])[0][newVal];
     };
 
     // Delete property.
@@ -38,7 +38,7 @@ export function MongoSchema(object: SchemaDefinition, options?: SchemaOptions): 
 export function MongoModel<T extends MongooseDocument>(name: string, schema: Schemas, options: MongoModelOptions = {}): PaginateModel<T> {
   const modelInstance = model<T>(name, schema);
   if (options && options.discriminators && options.discriminators.length > 0) {
-    options.discriminators.map((discriminator) => {
+    options.discriminators.map((discriminator: any) => {
       const discriminatorModel = modelInstance.discriminator(discriminator.key, discriminator.schema) as PaginateModel<T>;
       models.push({ [discriminator.key.toLowerCase()]: discriminatorModel });
     });
@@ -79,8 +79,8 @@ class MongoDatabase implements Database {
   }
 
   models(modelList: ModelList[]): void {
-    modelList.map((model) => {
-      import(model.path).then((e) => {
+    modelList.map((model: any) => {
+      import(model.path).then((e: any) => {
         models.push({ [model.name]: e.default });
       });
     });
