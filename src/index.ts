@@ -33,6 +33,10 @@ export function Models(name: string): any {
   };
 }
 
+export function MongoDatabases(name: string): Mongoose {
+  return dbList[name];
+}
+
 export function MongoSchema(object: SchemaDefinition, options?: SchemaOptions): Schemas {
   return new Schemas(object, options);
 }
