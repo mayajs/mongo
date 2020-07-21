@@ -106,9 +106,20 @@ class MongoDatabase implements Database {
   }
 
   private mapSchema(schemas: SchemaObject[]): void {
-    schemas.map((schema: SchemaObject) => {
-      MongoModel(schema.name, schema.schema, schema.options);
+    schemas.map((schemaObject: SchemaObject) => {
+      this.addModel(schemaObject.name, schemaObject.schema, schemaObject.options);
     });
+  }
+
+  private addModel<T extends MongooseDocument>(name: string, schema: Schemas, options: MongoModelOptions = {}): void {
+    const modelInstance = this.dbInstance.model<T>(name, schema);
+    if (options && options.discriminators && options.discriminators.length > 0) {
+      options.discriminators.map((discriminator: any) => {
+        const discriminatorModel = modelInstance.discriminator(discriminator.key, discriminator.schema) as PaginateModel<T>;
+        models.push({ [discriminator.key.toLowerCase()]: discriminatorModel });
+      });
+    }
+    models.push({ [name]: modelInstance });
   }
 }
 
