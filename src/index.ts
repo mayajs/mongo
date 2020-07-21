@@ -67,15 +67,16 @@ class MongoDatabase implements Database {
   }
 
   connection(logs: boolean): void {
-    let isConnecting = false;
     const checkConnection = setInterval(() => {
-      if (this.dbInstance.connection.readyState === 2 && !isConnecting) {
-        isConnecting = true;
-        if (logs) {
-          console.log(`\x1b[33m[mayajs] connecting to database\x1b[0m`);
-        }
-      } else {
+      if (this.dbInstance.connection.readyState === 1) {
         clearInterval(checkConnection);
+        return;
+      }
+
+      const isConnecting = this.dbInstance.connection.readyState === 2;
+
+      if (isConnecting && logs) {
+        console.log(`\x1b[33m[mayajs] connecting to database\x1b[0m`);
       }
     }, 1000);
   }
