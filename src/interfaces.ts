@@ -4,9 +4,16 @@ export interface ModelPaginate {
   [k: string]: PaginateModel<any>;
 }
 
+export interface SchemaObject {
+  name: string;
+  schema: Schema;
+  options?: MongoModelOptions;
+}
+
 export interface MongodbOptions {
   connectionString: string; // Connection string
   options?: ConnectionOptions; // Mongoose connect options OPTIONAL
+  schemas?: SchemaObject[];
 }
 
 export interface Database {
