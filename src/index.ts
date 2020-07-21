@@ -41,11 +41,13 @@ export function MongoModel(name: string, schema: Schemas, options: MongoModelOpt
 }
 
 class MongoDatabase implements Database {
-  private dbInstance: string;
+  private dbInstance: Mongoose;
   private schemas: SchemaObject[] = [];
 
   constructor(private mongoConnection: MongodbOptions) {
-    this.dbInstance = `db${Object.keys(dbList).length + 1}`;
+    const dbName = `db${Object.keys(dbList).length + 1}`;
+    dbList[dbName] = mogoose;
+    this.dbInstance = dbList[dbName];
   }
 
   connect(): Promise<any> {
@@ -61,14 +63,13 @@ class MongoDatabase implements Database {
     } = this.mongoConnection;
 
     this.schemas = schemas;
-    dbList[this.dbInstance] = mogoose;
-    return dbList[this.dbInstance].connect(connectionString, options);
+    return this.dbInstance.connect(connectionString, options);
   }
 
   connection(logs: boolean): void {
     let isConnecting = false;
     const checkConnection = setInterval(() => {
-      if (dbList[this.dbInstance].connection.readyState === 2 && !isConnecting) {
+      if (this.dbInstance.connection.readyState === 2 && !isConnecting) {
         isConnecting = true;
         if (logs) {
           console.log(`\x1b[33m[mayajs] connecting to database\x1b[0m`);
@@ -95,7 +96,7 @@ class MongoDatabase implements Database {
   }
 
   private addModel<T extends MongooseDocument>(name: string, schema: Schemas, options: MongoModelOptions = {}): void {
-    const modelInstance = dbList[this.dbInstance].model<T>(name, schema);
+    const modelInstance = this.dbInstance.model<T>(name, schema);
     this.addModelToList(name, modelInstance);
 
     if (options && options.discriminators && options.discriminators.length > 0) {
