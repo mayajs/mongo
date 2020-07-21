@@ -1,17 +1,8 @@
-import {
-  connect,
-  connection,
-  Schema as Schemas,
-  model,
-  SchemaDefinition,
-  SchemaOptions,
-  PaginateModel,
-  Document as MongooseDocument,
-  Mongoose,
-} from "mongoose";
+import mogoose, { Schema as Schemas, SchemaDefinition, SchemaOptions, PaginateModel, Document as MongooseDocument, Mongoose } from "mongoose";
 import { ModelPaginate, MongodbOptions, Database, ModelList, MongoModelOptions, SchemaObject } from "./interfaces";
 
 const models: ModelPaginate[] = [];
+const dbList: { [x: string]: Mongoose } = {};
 
 export function Models(name: string): any {
   return (target: any, key: string): any => {
@@ -45,27 +36,19 @@ export function MongoSchema(object: SchemaDefinition, options?: SchemaOptions): 
   return new Schemas(object, options);
 }
 
-export function MongoModel<T extends MongooseDocument>(name: string, schema: Schemas, options: MongoModelOptions = {}): PaginateModel<T> {
-  const modelInstance = model<T>(name, schema);
-  if (options && options.discriminators && options.discriminators.length > 0) {
-    options.discriminators.map((discriminator: any) => {
-      const discriminatorModel = modelInstance.discriminator(discriminator.key, discriminator.schema) as PaginateModel<T>;
-      models.push({ [discriminator.key.toLowerCase()]: discriminatorModel });
-    });
-  }
-  models.push({ [name]: modelInstance });
-  return modelInstance;
+export function MongoModel(name: string, schema: Schemas, options: MongoModelOptions = {}): SchemaObject {
+  return { name, schema, options };
 }
 
 class MongoDatabase implements Database {
-  private dbInstance: Mongoose;
+  private dbInstance: string;
   private schemas: SchemaObject[] = [];
 
   constructor(private mongoConnection: MongodbOptions) {
-    this.dbInstance = new Mongoose();
+    this.dbInstance = `db${Object.keys(dbList).length + 1}`;
   }
 
-  async connect(): Promise<any> {
+  connect(): Promise<any> {
     const {
       connectionString,
       options = {
@@ -78,14 +61,14 @@ class MongoDatabase implements Database {
     } = this.mongoConnection;
 
     this.schemas = schemas;
-    this.dbInstance = await connect(connectionString, options);
-    return this.dbInstance;
+    dbList[this.dbInstance] = mogoose;
+    return dbList[this.dbInstance].connect(connectionString, options);
   }
 
   connection(logs: boolean): void {
     let isConnecting = false;
     const checkConnection = setInterval(() => {
-      if (connection.readyState === 2 && !isConnecting) {
+      if (dbList[this.dbInstance].connection.readyState === 2 && !isConnecting) {
         isConnecting = true;
         if (logs) {
           console.log(`\x1b[33m[mayajs] connecting to database\x1b[0m`);
@@ -100,7 +83,8 @@ class MongoDatabase implements Database {
     this.mapSchema(this.schemas);
     modelList.map(async (model: any) => {
       const instance = await import(model.path);
-      this.addModelToList(model.name, instance.default ?? instance);
+      const { name, schema, options } = instance.default ?? instance;
+      this.addModel(name, schema, options);
     });
   }
 
@@ -111,7 +95,7 @@ class MongoDatabase implements Database {
   }
 
   private addModel<T extends MongooseDocument>(name: string, schema: Schemas, options: MongoModelOptions = {}): void {
-    const modelInstance = this.dbInstance.model<T>(name, schema);
+    const modelInstance = dbList[this.dbInstance].model<T>(name, schema);
     this.addModelToList(name, modelInstance);
 
     if (options && options.discriminators && options.discriminators.length > 0) {
