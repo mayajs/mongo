@@ -98,10 +98,12 @@ class MongoDatabase implements Database {
 
   models(modelList: ModelList[]): void {
     this.mapSchema(this.schemas);
-    modelList.map((model: any) => {
-      import(model.path).then((e: any) => {
-        models.push({ [model.name]: e.default });
-      });
+    modelList.map(async (model: any) => {
+      const instance = await import(model.path);
+      const modelName = this.sanitizeModelName(model.name);
+      if (!this.modelNameExist(modelName)) {
+        models.push({ [modelName]: instance.default ?? instance });
+      }
     });
   }
 
@@ -117,15 +119,23 @@ class MongoDatabase implements Database {
       options.discriminators.map((discriminator: any) => {
         const discriminatorModel = modelInstance.discriminator(discriminator.key, discriminator.schema) as PaginateModel<T>;
         const modelName = this.sanitizeModelName(discriminator.key);
-        models.push({ [modelName]: discriminatorModel });
+        if (!this.modelNameExist(modelName)) {
+          models.push({ [modelName]: discriminatorModel });
+        }
       });
     }
     const modelName = this.sanitizeModelName(name);
-    models.push({ [modelName]: modelInstance });
+    if (!this.modelNameExist(modelName)) {
+      models.push({ [modelName]: modelInstance });
+    }
   }
 
   private sanitizeModelName(name: string): string {
     return name.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase();
+  }
+
+  private modelNameExist(name: string): boolean {
+    return models.some((value: any) => Object.keys(value)[0] === name);
   }
 }
 
