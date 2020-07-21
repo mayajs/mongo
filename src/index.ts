@@ -100,10 +100,7 @@ class MongoDatabase implements Database {
     this.mapSchema(this.schemas);
     modelList.map(async (model: any) => {
       const instance = await import(model.path);
-      const modelName = this.sanitizeModelName(model.name);
-      if (!this.modelNameExist(modelName)) {
-        models.push({ [modelName]: instance.default ?? instance });
-      }
+      this.addModelToList(model.name, instance.default ?? instance);
     });
   }
 
@@ -115,18 +112,13 @@ class MongoDatabase implements Database {
 
   private addModel<T extends MongooseDocument>(name: string, schema: Schemas, options: MongoModelOptions = {}): void {
     const modelInstance = this.dbInstance.model<T>(name, schema);
+    this.addModelToList(name, modelInstance);
+
     if (options && options.discriminators && options.discriminators.length > 0) {
       options.discriminators.map((discriminator: any) => {
         const discriminatorModel = modelInstance.discriminator(discriminator.key, discriminator.schema) as PaginateModel<T>;
-        const modelName = this.sanitizeModelName(discriminator.key);
-        if (!this.modelNameExist(modelName)) {
-          models.push({ [modelName]: discriminatorModel });
-        }
+        this.addModelToList(discriminator.key, discriminatorModel);
       });
-    }
-    const modelName = this.sanitizeModelName(name);
-    if (!this.modelNameExist(modelName)) {
-      models.push({ [modelName]: modelInstance });
     }
   }
 
@@ -136,6 +128,13 @@ class MongoDatabase implements Database {
 
   private modelNameExist(name: string): boolean {
     return models.some((value: any) => Object.keys(value)[0] === name);
+  }
+
+  private addModelToList<T extends Document>(name: string, modelInstance: PaginateModel<T>): void {
+    const modelName = this.sanitizeModelName(name);
+    if (!this.modelNameExist(modelName)) {
+      models.push({ [modelName]: modelInstance });
+    }
   }
 }
 
