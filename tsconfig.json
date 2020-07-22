@@ -1,16 +1,18 @@
 {
-    "exclude": [".vscode"],
-    "compilerOptions": {
-        "target": "ES6",
-        "module": "commonjs",
-        "lib": ["es5", "es2015", "es2016", "es2017", "esnext"],
-        "strict": true,
-        "outDir": "./",
-        "rootDir": "./src",
-        "declaration": true,
-        "moduleResolution": "node",
-        "esModuleInterop": true,
-        "experimentalDecorators": true,
-        "emitDecoratorMetadata": true,
-    }
+  "exclude": [".vscode", "test", "lib"],
+  "compilerOptions": {
+    "target": "ES6",
+    "module": "commonjs",
+    "lib": ["es5", "es2015", "es2016", "es2017", "esnext"],
+    "strict": true,
+    "outDir": "./lib",
+    "rootDir": "./src",
+    "declaration": true,
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "noUnusedParameters": true,
+    "downlevelIteration": true
+  }
 }
