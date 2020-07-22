@@ -40,6 +40,7 @@ Mongo accepts an object settings that will set the connection for MongoDB. MayaJ
 {
   connectionString: string; // Connection string
   options?: ConnectionOptions; // Mongoose connect options OPTIONAL
+  schemas?: SchemaObject; // Mongoose schema object OPTIONAL
 }
 ```
 
@@ -50,9 +51,22 @@ Mongo accepts an object settings that will set the connection for MongoDB. MayaJ
 ```javascript
 @App({
   database: Mongo({
-    connectionString: process.env.MONGO_CONNECTION_URL || "your-connection-string-here",
-    options: { useCreateIndex: true, useNewUrlParser: true, useFindAndModify: false },
+    connectionString: "your-connection-string-here",
+    options: {}, // Define Mongodb options
+    schemas: [], // Add mongoose schema here
   }),
 })
 export class AppModule {}
 ```
+
+## Collaborating
+
+See collaborating guides [here.](https://github.com/mayajs/maya/blob/master/COLLABORATOR_GUIDE.md)
+
+## People
+
+Author and maintainer [Mac Ignacio](https://github.com/Mackignacio)
+
+## License
+
+[MIT](https://github.com/mayajs/maya/blob/master/LICENSE)
