@@ -42,6 +42,14 @@ class MongoDatabase implements Database {
   private dbName: string;
   private modelList: ModelDictionary = {};
 
+  get name(): string {
+    return this.dbName;
+  }
+
+  get instance(): Mongoose {
+    return this.dbInstance;
+  }
+
   constructor(private mongoConnection: MongodbOptions) {
     const { name, schemas = [] } = mongoConnection;
     this.dbName = name ?? `db${Object.keys(dbList).length + 1}`;
