@@ -1,4 +1,4 @@
-import { PaginateModel, ConnectionOptions, Schema, Document } from "mongoose";
+import { PaginateModel, ConnectionOptions, Schema, Mongoose } from "mongoose";
 
 export interface ModelDictionary {
   [k: string]: PaginateModel<any>;
@@ -22,9 +22,11 @@ export interface MongodbOptions {
 }
 
 export interface Database {
+  name: string;
+  instance: Mongoose;
   connect: () => Promise<any>;
   connection: (logs: boolean) => void;
-  models: (array: ModelList[]) => void;
+  models: () => ModelDictionary;
 }
 
 export interface ModelList {
