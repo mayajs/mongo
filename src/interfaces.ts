@@ -1,5 +1,9 @@
 import { PaginateModel, ConnectionOptions, Schema, Document } from "mongoose";
 
+export interface ModelDictionary {
+  [k: string]: PaginateModel<any>;
+}
+
 export interface ModelPaginate {
   [k: string]: PaginateModel<any>;
 }
