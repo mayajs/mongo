@@ -52,7 +52,7 @@ class MongoDatabase implements Database {
 
   constructor(private mongoConnection: MongodbOptions) {
     const { name, schemas = [] } = mongoConnection;
-    this.dbName = name ?? `db${Object.keys(dbList).length + 1}`;
+    this.dbName = name;
     dbList[this.dbName] = mogoose;
     this.schemas = schemas;
     this.dbInstance = dbList[this.dbName];
