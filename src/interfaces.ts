@@ -29,11 +29,6 @@ export interface Database {
   models: () => ModelDictionary;
 }
 
-export interface ModelList {
-  name: string;
-  path: string;
-}
-
 export interface MongoModelOptions {
   discriminators?: Array<{ key: string; schema: Schema }>;
 }

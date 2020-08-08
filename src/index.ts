@@ -1,5 +1,5 @@
 import mogoose, { Schema as Schemas, SchemaDefinition, SchemaOptions, PaginateModel, Document as MongooseDocument, Mongoose } from "mongoose";
-import { MongodbOptions, Database, ModelList, MongoModelOptions, SchemaObject, ModelDictionary } from "./interfaces";
+import { MongodbOptions, Database, MongoModelOptions, SchemaObject, ModelDictionary } from "./interfaces";
 import mongoosePaginate from "mongoose-paginate";
 
 let models: ModelDictionary = {};
