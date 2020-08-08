@@ -1,23 +1,15 @@
 import mogoose, { Schema as Schemas, SchemaDefinition, SchemaOptions, PaginateModel, Document as MongooseDocument, Mongoose } from "mongoose";
-import { ModelPaginate, MongodbOptions, Database, ModelList, MongoModelOptions, SchemaObject } from "./interfaces";
+import { MongodbOptions, Database, ModelList, MongoModelOptions, SchemaObject, ModelDictionary } from "./interfaces";
 import mongoosePaginate from "mongoose-paginate";
 
-const models: ModelPaginate[] = [];
+let models: ModelDictionary = {};
 const dbList: { [x: string]: Mongoose } = {};
 
 export function Models(name: string): any {
   return (target: any, key: string): any => {
-    // property value
-    let value = target[key];
-
     // property getter method
     const getter = () => {
-      return models.filter((e: any) => e[name])[0][name];
-    };
-
-    // property setter method
-    const setter = (newVal: string) => {
-      value = models.filter((e: any) => e[newVal])[0][newVal];
+      return models[name];
     };
 
     // Delete property.
@@ -27,7 +19,6 @@ export function Models(name: string): any {
         configurable: true,
         enumerable: true,
         get: getter,
-        set: setter,
       });
     }
   };
@@ -49,6 +40,7 @@ class MongoDatabase implements Database {
   private dbInstance: Mongoose;
   private schemas: SchemaObject[] = [];
   private dbName: string;
+  private modelList: ModelDictionary = {};
 
   constructor(private mongoConnection: MongodbOptions) {
     const { name, schemas = [] } = mongoConnection;
@@ -82,13 +74,10 @@ class MongoDatabase implements Database {
     }, 1000);
   }
 
-  models(modelList: ModelList[]): void {
+  models(): ModelDictionary {
     this.mapSchema(this.schemas);
-    modelList.map(async (model: any) => {
-      const instance = await import(model.path);
-      const { name, schema, options } = instance.default ?? instance;
-      this.addModel(name, schema, options);
-    });
+    models = { ...models, ...this.modelList };
+    return this.modelList;
   }
 
   private mapSchema(schemas: SchemaObject[]): void {
@@ -120,13 +109,13 @@ class MongoDatabase implements Database {
   }
 
   private modelNameExist(name: string): boolean {
-    return models.some((value: any) => Object.keys(value)[0] === name);
+    return Object.keys(this.modelList).some((value: any) => value === name);
   }
 
   private addModelToList<T extends Document>(name: string, modelInstance: PaginateModel<T>): void {
     const modelName = this.sanitizeModelName(name);
     if (!this.modelNameExist(modelName)) {
-      models.push({ [modelName]: modelInstance });
+      this.modelList[modelName] = modelInstance;
     }
   }
 }
