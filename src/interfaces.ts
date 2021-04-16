@@ -1,34 +1,33 @@
 import { PaginateModel, ConnectionOptions, Schema, Mongoose } from "mongoose";
-
-export interface ModelDictionary {
+interface ModelDictionary {
   [k: string]: PaginateModel<any>;
 }
 
-export interface ModelPaginate {
-  [k: string]: PaginateModel<any>;
-}
-
-export interface SchemaObject {
+interface SchemaObject {
   name: string;
   schema: Schema;
   options?: MongoModelOptions;
 }
 
-export interface MongodbOptions {
-  connectionString: string; // Connection string
-  name: string; // Mongodb instance name
-  options?: ConnectionOptions; // Mongoose connect options OPTIONAL
-  schemas?: SchemaObject[]; // List of SchemaObject
-}
-
-export interface Database {
+export interface MongodbOptions extends MongoInstanceProps {
   name: string;
-  instance: Mongoose;
-  connect: () => Promise<any>;
-  connection: (logs: boolean) => void;
-  models: () => ModelDictionary;
 }
 
-export interface MongoModelOptions {
+interface MongoInstanceProps {
+  connectionString: string;
+  options?: ConnectionOptions;
+  schemas?: SchemaObject[];
+}
+
+interface MongoModelOptions {
   discriminators?: Array<{ key: string; schema: Schema }>;
+}
+
+export interface MongoInstance extends MongoInstanceProps {
+  instance: Mongoose;
+  models: ModelDictionary;
+}
+
+export interface MongoDatabases {
+  [x: string]: MongoInstance;
 }
