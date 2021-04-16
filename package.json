@@ -4,11 +4,19 @@
   "description": "MayaJS Mongo decorators and modules",
   "main": "lib/index.js",
   "files": [
-    "lib"
+    "LICENSE",
+    "README.md",
+    "!node_modules",
+    "!scripts",
+    "**.js",
+    "**.d.ts"
   ],
   "scripts": {
-    "start": "rimraf lib && tsc -w",
-    "prepack": "rimraf lib && tsc"
+    "clean": "rimraf index.js && rimraf **.d.ts && rimraf mongodb.**.js && rimraf interfaces.** && rimraf lib",
+    "tgz": "rimraf *.tgz",
+    "package": "node ./scripts/clean-package.js",
+    "start": "npm run clean && npm run tgz && tsc -w",
+    "prepack": "npm run clean && npm run package && tsc --outDir ."
   },
   "repository": {
     "type": "git",
@@ -42,19 +50,13 @@
     "trailingComma": "all"
   },
   "devDependencies": {
-    "@types/mongoose": "^5.7.32",
+    "@mayajs/router": "^0.4.0",
     "@types/mongoose-paginate": "^5.0.8",
-    "@types/node": "^12.7.2",
-    "mongoose": "^5.9.28",
+    "@types/node": "^13.11.0",
+    "mongoose": "^5.12.3",
     "mongoose-paginate": "^5.0.3",
     "prettier": "^2.0.5",
     "rimraf": "^3.0.2",
-    "tslint": "^5.19.0",
-    "tslint-config-prettier": "^1.18.0",
-    "typescript": "^3.5.3"
-  },
-  "peerDependencies": {
-    "mongoose": "^5.9.25",
-    "mongoose-paginate": "^5.0.3"
+    "typescript": "^3.9.5"
   }
 }
