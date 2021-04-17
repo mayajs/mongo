@@ -2,7 +2,7 @@ import { MongoDatabases, MongodbOptions, MongoInstance } from "./interfaces";
 import { Services } from "@mayajs/router";
 import mongoose from "mongoose";
 
-export class MongodbServices extends Services {
+export class MongoDbServices extends Services {
   private list: MongoDatabases;
 
   constructor() {

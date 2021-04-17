@@ -1,16 +1,16 @@
 import { CustomModule, ModuleWithProviders } from "@mayajs/router";
 import { MongodbOptions } from "./interfaces";
-import { MongodbServices } from "./mongodb.service";
+import { MongoDbServices } from "./mongodb.service";
 
 export class MongoDbModule extends CustomModule {
   static options: MongodbOptions;
 
   static forRoot(options: MongodbOptions): ModuleWithProviders {
     this.options = options;
-    return { module: MongoDbModule, providers: [MongodbServices], dependencies: [MongodbServices], imports: [] };
+    return { module: MongoDbModule, providers: [MongoDbServices], dependencies: [MongoDbServices], imports: [] };
   }
 
-  constructor(private mongo: MongodbServices) {
+  constructor(private mongo: MongoDbServices) {
     super();
   }
 
