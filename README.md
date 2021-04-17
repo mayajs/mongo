@@ -1,63 +1,87 @@
 <p align="center"><img src="https://github.com/mayajs/maya/blob/master/maya.svg"></p>
-
-<h1 align="center">Mongo Decorators and Modules</h1>
+<h1 align="center">Mongodb Module and Service</h1>
 
 ## Description
 
-This is a MayaJS library that deals with Mongodb drivers. It uses `mongoose` to connect to any mongodb database. It also use mongoose Schema and Model for its model creation.
+A MayaJS module and service that deals with Mongodb drivers. It uses `mongoose` as its core dependency to communicate with the database.
 
-## Decorators
+## Installation
 
-### Models
-
-> Creates a model intance based on the name passed on the parameter.
-
-MayaJS collect and store all the models defined on the `@Controller` decorators to a single object. Everytime the `@Models` decorator is attached to a variable it replace its value with a model instance. This model instance is based on [mongoose model](https://mongoosejs.com/docs/api/model.html). All of mongoose functionality is available for this model instance.
-
-#### Pseudo Code
-
-```javascript
-   @Models(model_name:string) varaiable_name;
+```shell
+npm i @mayajs/mongo
 ```
 
-#### Sample Code
+## Quick Start
 
-```javascript
-   @Models("sample") model;
+MayaJS uses custom modules to add functionality on its core. You can use `MongoDbModule` and import in on any MayaJS module in your project.
+
+```ts
+import { MongoDbModule } from "@mayajs/mongo";
+import { Schema } from "mongoose";
+
+// Define schema for mongoose
+const User = new Schema({
+  name: String,
+  email: String,
+  password: String,
+});
+
+const mongodbOptions = {
+  connectionString: "your-mongodb-connection-string",
+  name: "your-collection-name",
+  options: {
+    // Any mongoose options can be used here
+    // i.e. useUnifiedTopology: true, useNewUrlParser: true, useFindAndModify: false
+  },
+  schemas: [
+    User, // Add mongoose schema object
+  ],
+};
+
+@Module({
+  imports: [MongoDbModule.forRoot(mongodbOptions)],
+})
+class CustomModule {}
 ```
 
-## Modules
+## Usage
 
-### Mongo
+To use mongodb inside your controller you will need to import `MongoDbServices`. MongoDbServices provides set of functionality to access, manipulate and interact with mongodb.
 
-> A wrapper for mongoose that MayaJS use to connect to MongoDB.
+### Accessing a Collection
 
-Mongo accepts an object settings that will set the connection for MongoDB. MayaJS will automatically connect to the specified settings whenever the server starts. It will also set the models using the models function. It typically used inside the `@App` decorator on the options paramater.
+MongoDbServices provides a `database` function to access a specific collection in mongodb.
 
-#### Options
+```ts
+import { MongoDbServices } from "@mayajs/mongo";
 
-```javascript
-{
-  connectionString: string; // Connection string
-  options?: ConnectionOptions; // Mongoose connect options OPTIONAL
-  schemas?: SchemaObject; // Mongoose schema object OPTIONAL
+@Controller()
+class UsersController {
+  // Inject MongoDbServices in a controller
+  constructor(private mongo: MongoDbServices) {}
+
+  sample() {
+    // Get specific collection in mongodb
+    const db = this.mongo.database("your-collection-name");
+  }
 }
 ```
 
-> **NOTE:** See full documentation of [ConnectionOptions here.](https://mongoosejs.com/docs/connections.html#options)
+### Accessing a Model
 
-#### Sample Code
+To access a model you will need first the get the collection instance that we get from the above example. On the db instance you can access the `model` object like seen below.
 
-```javascript
-@App({
-  database: Mongo({
-    connectionString: "your-connection-string-here",
-    options: {}, // Define Mongodb options
-    schemas: [], // Add mongoose schema here
-  }),
-})
-export class AppModule {}
+```ts
+sample() {
+  // Get specific collection in mongodb
+  const db = this.mongo.database("your-collection-name");
+
+  // Get specific model instance
+  const model = db.instance.model("your-model-name");
+}
 ```
+
+This model instance is based on [Mongoose Model](https://mongoosejs.com/docs/api/model.html). All of mongoose functionality is available for this model instance.
 
 ## Collaborating
 
