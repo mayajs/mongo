@@ -34,7 +34,11 @@ const mongodbOptions = {
     // i.e. useUnifiedTopology: true, useNewUrlParser: true, useFindAndModify: false
   },
   schemas: [
-    User, // Add mongoose schema object
+    {
+      name: "User", // Name of model
+      schema: User, // Mongoose Schema
+    },
+    ,
   ],
 };
 
