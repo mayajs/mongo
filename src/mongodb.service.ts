@@ -1,6 +1,6 @@
-import { MongoDatabases, MongodbOptions, MongoInstance } from "./interfaces";
+import { DiscriminatorObject, MongoDatabases, MongodbOptions, MongoInstance } from "./interfaces";
+import mongoose, { Document, PaginateModel } from "mongoose";
 import { Services } from "@mayajs/router";
-import mongoose from "mongoose";
 
 export class MongoDbServices extends Services {
   private list: MongoDatabases;
@@ -15,7 +15,7 @@ export class MongoDbServices extends Services {
     try {
       const instance = await db.instance.connect(db.connectionString, db.options);
       this.list[name].instance = instance;
-      console.log(`${name} is connected!`);
+      console.log(`\x1b[32m[mayajs] ${name} is connected!\x1b[0m`);
       return instance;
     } catch (error) {
       console.log(error);
@@ -23,13 +23,9 @@ export class MongoDbServices extends Services {
   }
 
   set options(value: MongodbOptions) {
-    const { name, ...options } = value;
-    this.list[name] = {
-      ...options,
-      options: { useUnifiedTopology: true, useNewUrlParser: true, useFindAndModify: false, ...options.options },
-      instance: mongoose,
-      models: {},
-    };
+    const { name, ...rest } = value;
+    const options = { useNewUrlParser: true, useCreateIndex: true, useUnifiedTopology: true, useFindAndModify: true, ...rest.options };
+    this.list[name] = { ...rest, options, instance: mongoose, models: {} };
   }
 
   database(name: string): MongoInstance {
@@ -40,10 +36,20 @@ export class MongoDbServices extends Services {
     const db = this.list[name];
 
     if (db.schemas && db.schemas?.length > 0) {
-      db.schemas.map(({ name, schema, ...options }) => {
+      db.schemas.map(({ name, schema, options }) => {
         const model = db.instance.model(name, schema);
+        if (options && options?.discriminators && options?.discriminators.length > 0) {
+          options.discriminators.map(this.addDiscriminatorModel(db, model));
+        }
         db.models[name] = model;
       });
     }
+  }
+
+  private addDiscriminatorModel<T extends Document>(db: MongoInstance, modelInstance: mongoose.PaginateModel<T>): (arg: any) => void {
+    return (discriminator: DiscriminatorObject) => {
+      const model = modelInstance.discriminator(discriminator.key, discriminator.schema) as PaginateModel<T>;
+      db.models[discriminator.key] = model;
+    };
   }
 }
