@@ -20,7 +20,7 @@ interface MongoInstanceProps {
 }
 
 interface MongoModelOptions {
-  discriminators?: Array<{ key: string; schema: Schema }>;
+  discriminators?: DiscriminatorObject[];
 }
 
 export interface MongoInstance extends MongoInstanceProps {
@@ -31,3 +31,5 @@ export interface MongoInstance extends MongoInstanceProps {
 export interface MongoDatabases {
   [x: string]: MongoInstance;
 }
+
+export type DiscriminatorObject = { key: string; schema: Schema };
